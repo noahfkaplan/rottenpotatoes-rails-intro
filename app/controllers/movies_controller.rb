@@ -17,7 +17,7 @@ class MoviesController < ApplicationController
     elsif(params[:sort] == "release_date")
       @release_date = "hilite"
     end
-
+    @movies = Movie.order(params[:sort])
   end
   def new
     # default: render 'new' template
