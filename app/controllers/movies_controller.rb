@@ -17,6 +17,11 @@ class MoviesController < ApplicationController
     elsif(params[:sort] == "release_date")
       @release_date = "hilite"
     end
+    #@all_ratings.each do |r|
+     # if :ratings.key?(r)
+      #  @movies = Movie.where("Rating = '#{r}'").order(params[:sort])
+      #end
+    #end
     @movies = Movie.order(params[:sort])
   end
   def new
