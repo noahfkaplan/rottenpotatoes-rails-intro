@@ -12,16 +12,33 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
+    sort = params[:sort] || session[:sort]
     if(params[:sort] == "title")
       @title = "hilite"
     elsif(params[:sort] == "release_date")
       @release_date = "hilite"
     end
-    if(params[:ratings] != nil)
-      @movies = Movie.where("Rating IN (?)", params[:ratings].keys).order(params[:sort])
-    else
-      @movies = Movie.order(params[:sort])
+    #if(params[:ratings] != nil)
+     # @movies = Movie.where("Rating IN (?)", params[:ratings].keys).order(params[:sort])
+    #else
+     # @movies = Movie.order(params[:sort])
+    #end
+    @current_ratings = params[:ratings] || session[:ratings] || {}
+    if @current_ratings == {}
+      @current_ratings = Hash[@all_ratings.map{|rating| [rating,rating]}]
     end
+    if session[:ratings] != params[:ratings] && @current_ratings != {}
+      session[:sort] = sort
+      session[:ratings] = @current_ratings
+      flash.keep
+      redirect_to :sort => sort, :ratings => @current_ratings and return
+    end
+    if session[:sort] != params[:sort]
+      session[:sort] = params[:sort]
+      flash.keep
+      redirect_to :sort => sort, :ratings => @current_ratings and return
+    end
+    @movies = Movie.where(rating: @current_ratings.keys).order(sort)
   end
   def new
     # default: render 'new' template
